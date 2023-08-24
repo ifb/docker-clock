@@ -11,10 +11,11 @@ services:
       - 123:123
     cap_add:
       - SYS_TIME
-    volumes:
+    devices:
       - /dev/gpsd0:/dev/gpsd0
       - /dev/ttyAMA0:/dev/ttyAMA0
       - /dev/pps0:/dev/pps0
+    volumes:
       - /etc/localtime:/etc/localtime
       - /etc/timezone:/etc/timezone:ro
       - /opt/clock/drift:/var/lib/chrony/drift
