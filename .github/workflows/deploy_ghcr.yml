@@ -18,8 +18,6 @@ on:
       - ".gitattributes"
       - ".gitignore"
       - ".dockerignore"
-  repository_dispatch:
-    types: build_on_wreadsb_update
 
   # Build and deploy the image nightly (to ensure we pick up any security updates)
   # schedule:
@@ -40,8 +38,8 @@ jobs:
       - name: Run hadolint against Dockerfiles
         run: docker run --rm -i -v "$PWD":/workdir --workdir /workdir --entrypoint hadolint hadolint/hadolint --ignore DL3003 --ignore DL3006 --ignore DL3010 --ignore DL4001 --ignore DL3007 --ignore DL3008 --ignore SC2068 --ignore DL3007 --ignore SC1091 --ignore DL3013 --ignore DL3010 $(find . -type f -iname "Dockerfile*")
 
-  deploy_ghcr_base:
-    name: Deploy base image to ghcr.io
+  deploy_ghcr:
+    name: Deploy image to ghcr.io
     needs: [hadolint]
     runs-on: ubuntu-latest
     permissions:
@@ -80,13 +78,13 @@ jobs:
         uses: docker/setup-buildx-action@v2
 
       # Build & Push Dockerfile (only push if this action was NOT triggered by a PR)
-      - name: Build & Push ghcr.io/sdr-enthusiasts/docker-baseimage:base
+      - name: Build & Push ghcr.io/ifb/docker-clock
         uses: docker/build-push-action@v4
         with:
           context: .
-          file: ./Dockerfile.base
+          file: ./Dockerfile
           no-cache: true
-          platforms: linux/386,linux/amd64,linux/arm/v7,linux/arm/v6,linux/arm64
+          platforms: linux/arm/v6
           push: ${{ github.event_name != 'pull_request' }}
-          tags: ghcr.io/sdr-enthusiasts/docker-baseimage:base
+          tags: ghcr.io/ifb/docker-clock
           labels: ${{ steps.meta.outputs.labels }}

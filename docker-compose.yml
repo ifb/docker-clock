@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  clock:
+    image: ghcr.io/ifb/docker-clock:latest
+    tty: true
+    container_name: clock
+    restart: always
+    ports:
+      - 2947:2947
+      - 123:123
+    cap_add:
+      - SYS_TIME
+    volumes:
+      - /dev/gpsd0:/dev/gpsd0
+      - /dev/ttyAMA0:/dev/ttyAMA0
+      - /dev/pps0:/dev/pps0
+      - /etc/localtime:/etc/localtime
+      - /etc/timezone:/etc/timezone:ro
+      - /opt/clock/drift:/var/lib/chrony/drift
+      - /opt/clock/dump:/var/run/chrony
+    tmpfs:
+      - /run:exec,size=16M
+      - /tmp:size=128M
+      - /var/log:size=32M

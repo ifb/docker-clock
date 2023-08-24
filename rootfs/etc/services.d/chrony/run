@@ -1,0 +1,8 @@
+#!/usr/bin/with-contenv bash
+#shellcheck shell=bash
+
+APPNAME="chrony"
+s6wrap=(s6wrap --quiet --timestamps --prepend="${APPNAME}")
+
+s6wrap --args echo "Starting chrony..."
+s6wrap --args chronyd -d -L 1 -r -s -F 1 -m

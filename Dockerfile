@@ -32,6 +32,17 @@ RUN set -x && \
     # needed to compile s6wrap:
     TEMP_PACKAGES+=(gcc) && \
     TEMP_PACKAGES+=(build-essential) && \
+    # chrony dependencies
+    TEMP_PACKAGES+=(asciidoctor) && \
+    TEMP_PACKAGES+=(bison) && \
+    # gpsd dependencies
+    TEMP_PACKAGES+=(libncurses-dev) && \
+    KEPT_PACKAGES+=(pps-tools) && \
+    TEMP_PACKAGES+=(python3-distutils) && \
+    KEPT_PACKAGES+=(python3-serial) && \
+    TEMP_PACKAGES+=(scons) && \
+    # convenience
+    KEPT_PACKAGES+=(nano) && \
     # install packages
     ## Builder fixes...
     mkdir -p /usr/sbin/ && \
@@ -69,12 +80,36 @@ RUN set -x && \
     mkdir -p /scripts /etc/cont-init.d && \
     curl -sSL https://raw.githubusercontent.com/sdr-enthusiasts/Buster-Docker-Fixes/main/00-libseccomp2 -o /etc/cont-init.d/00-libsecomp2 && \
     curl -sSL https://raw.githubusercontent.com/sdr-enthusiasts/docker-baseimage/main/scripts/common -o /scripts/common && \
+    # deploy chrony
+    pushd /tmp && \
+    git clone --depth=1 https://gitlab.com/chrony/chrony.git && \
+      cd chrony && \
+      echo $(git rev-list -n 1 HEAD | cut -c 1-7) > version.txt && \
+      ./configure --prefix=/usr --enable-scfilter --with-ntp-era=$(date +'%s') && \
+      make -j $(nproc) && \
+      make install && \
+    popd && \
+    # deploy gpsd
+    pushd /tmp && \
+    git clone --depth=1 https://gitlab.com/gpsd/gpsd.git && \
+      cd gpsd && \
+      scons -c && \
+      scons -j $(nproc) timeservice=yes python=true ublox=yes manbuild=No shm_export=true prefix=/usr python_libdir=/usr/lib/python3/dist-packages && \
+      scons install && \
+    popd && \
+    # Add Container Version
+    branch="##BRANCH##" && \
+    [[ "${branch:0:1}" == "#" ]] && branch="master" || true && \
+    git clone --depth=1 -b $branch https://github.com/ifb/docker-clock.git /tmp/clone && \
+    pushd /tmp/clone && \
+    echo "$(TZ=UTC date +%Y%m%d-%H%M%S)_$(git rev-parse --short HEAD)_$(git branch --show-current)" > /.CONTAINER_VERSION && \
+    popd && \
+    rm -rf /tmp/* && \
     # Clean up
     apt-get remove -y "${TEMP_PACKAGES[@]}" && \
     apt-get autoremove -y && \
     rm -rf /src/* /tmp/* /var/lib/apt/lists/*
 
-# ADD https://raw.githubusercontent.com/sdr-enthusiasts/Buster-Docker-Fixes/main/00-libseccomp2 /etc/cont-init.d/00-libsecomp2
+COPY rootfs/ /
 
 ENTRYPOINT [ "/init" ]
-
