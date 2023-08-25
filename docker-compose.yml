@@ -13,14 +13,13 @@ services:
     cap_add:
       - SYS_TIME
     devices:
-      - /dev/gpsd0:/dev/gpsd0
       - /dev/ttyAMA0:/dev/ttyAMA0
       - /dev/pps0:/dev/pps0
     volumes:
       - /etc/localtime:/etc/localtime
       - /etc/timezone:/etc/timezone:ro
       - /opt/clock/drift:/var/lib/chrony/drift
-      - /opt/clock/dump:/var/run/chrony
+      - /opt/clock/dump:/run/chrony/dump
     tmpfs:
       - /run:exec,size=16M
       - /tmp:size=128M
