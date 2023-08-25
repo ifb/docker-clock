@@ -35,6 +35,7 @@ RUN set -x && \
     # chrony dependencies
     TEMP_PACKAGES+=(asciidoctor) && \
     TEMP_PACKAGES+=(bison) && \
+    KEEP_PACKAGES+=(libcap) && \
     TEMP_PACKAGES+=(libcap-dev) && \
     adduser --system --group \
     --gecos "Chrony daemon" \
