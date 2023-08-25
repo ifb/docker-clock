@@ -5,4 +5,4 @@ APPNAME="gpsd"
 s6wrap=(s6wrap --quiet --timestamps --prepend="${APPNAME}")
 
 s6wrap --args echo "Starting gpsd..."
-s6wrap --args s6-setuidgid root gpsd /dev/ttyAMA0 --foreground --passive -s 115200 -f 8N1 --listenany --nowait
+s6wrap --args s6-setuidgid root gpsd /dev/ttyAMA0 /dev/pps0 --foreground --passive -s 115200 -f 8N1 --listenany --nowait
