@@ -35,12 +35,22 @@ RUN set -x && \
     # chrony dependencies
     TEMP_PACKAGES+=(asciidoctor) && \
     TEMP_PACKAGES+=(bison) && \
+    adduser --system --group \
+    --gecos "Chrony daemon" \
+    --home /var/lib/chrony \
+    --no-create-home --force-badname \
+    _chrony && \
     # gpsd dependencies
-    TEMP_PACKAGES+=(libncurses-dev) && \
+    TEMP_PACKAGES+=(libncurses5-dev) && \
+    TEMP_PACKAGES+=(pkg-config) && \
     KEPT_PACKAGES+=(pps-tools) && \
     TEMP_PACKAGES+=(python3-distutils) && \
     KEPT_PACKAGES+=(python3-serial) && \
     TEMP_PACKAGES+=(scons) && \
+    adduser --system --ingroup dialout --home /run/gpsd \
+    --gecos "GPSD system user" --shell /bin/false \
+    --disabled-password \
+    gpsd && \
     # convenience
     KEPT_PACKAGES+=(nano) && \
     # install packages
