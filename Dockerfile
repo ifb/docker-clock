@@ -1,7 +1,7 @@
 FROM debian:bookworm-20230814-slim
 
 ENV S6_BEHAVIOUR_IF_STAGE2_FAILS=2 \
-    S6OVERLAY_VERSION=v2.2.0.3
+    S6OVERLAY_VERSION="v3.1.5.0"
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
@@ -70,6 +70,8 @@ RUN set -x && \
       /opt/healthchecks-framework/*.md \
       /opt/healthchecks-framework/tests \
       && \
+    # fix healthchecks framework pathing
+    sed -i 's/S6_SERVICE_PATH="\/run\/s6\/services"/S6_SERVICE_PATH="\/run\/s6\/legacy-services"/g' /opt/healthchecks-framework/checks/check_s6_service_abnormal_death_tally.sh && \
     # Add s6wrap
     pushd /tmp && \
       git clone --depth=1 https://github.com/wiedehopf/s6wrap.git && \
@@ -79,7 +81,9 @@ RUN set -x && \
     popd && \
     # Add additional stuff
     mkdir -p /scripts /etc/cont-init.d && \
-    curl -sSL https://raw.githubusercontent.com/sdr-enthusiasts/Buster-Docker-Fixes/main/00-libseccomp2 -o /etc/cont-init.d/00-libsecomp2 && \
+    curl -sSL https://raw.githubusercontent.com/sdr-enthusiasts/Buster-Docker-Fixes/main/install_libseccomp2.sh | bash && \
+    chmod +x /etc/s6-overlay/s6-rc.d/libseccomp2/up && \
+    chmod +x /etc/s6-overlay/scripts/libseccomp2_check.sh && \
     curl -sSL https://raw.githubusercontent.com/sdr-enthusiasts/docker-baseimage/main/scripts/common -o /scripts/common && \
     # deploy chrony
     pushd /tmp && \
