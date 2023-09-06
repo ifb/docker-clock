@@ -20,6 +20,7 @@ services:
       - /etc/timezone:/etc/timezone:ro
       - /opt/clock/drift:/var/lib/chrony/drift
       - /opt/clock/dump:/run/chrony/dump
+      - /opt/clock/chrony.conf:/etc/chrony.conf:ro
     tmpfs:
       - /run:exec,size=16M
       - /tmp:size=128M
