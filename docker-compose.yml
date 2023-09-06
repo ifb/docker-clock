@@ -7,7 +7,7 @@ services:
     container_name: clock
     restart: always
     environment:
-      - UBXOPTS="-f /dev/ttyAMA0 -P 18 -v 0"
+      - UBXOPTS=-f /dev/ttyAMA0 -P 18 -v 0
     ports:
       - 2947:2947
       - 323:323/udp

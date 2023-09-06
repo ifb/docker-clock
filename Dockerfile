@@ -56,7 +56,7 @@ RUN set -x && \
         "${TEMP_PACKAGES[@]}" \
         && \
     # install S6 Overlay
-    curl --location --output /tmp/deploy-s6-overlay.sh https://raw.githubusercontent.com/mikenye/deploy-s6-overlay/master/deploy-s6-overlay.sh && \
+    curl --location --output /tmp/deploy-s6-overlay.sh https://raw.githubusercontent.com/mikenye/deploy-s6-overlay/master/deploy-s6-overlay-v3.sh && \
     sh /tmp/deploy-s6-overlay.sh && \
     rm -f /tmp/deploy-s6-overlay.sh && \
     # deploy healthchecks framework

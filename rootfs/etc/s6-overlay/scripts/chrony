@@ -4,5 +4,5 @@
 APPNAME="chrony"
 s6wrap=(s6wrap --quiet --timestamps --prepend="${APPNAME}")
 
-s6wrap --args echo "Starting chrony..."
+s6wrap --args "Starting chrony..."
 s6wrap --args s6-setuidgid root chronyd -d -L 1 -r -s -m
